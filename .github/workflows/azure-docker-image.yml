@@ -1,6 +1,34 @@
 on: [push]
 name: Linux_Container_Workflow
 
+apiVersion: 2019-12-01
+location: eastus
+name: '20201006'
+properties:
+  containers:
+  - name: mycontainer
+    properties:
+      image: mcr.microsoft.com/oss/nginx/nginx:1.15.5-alpine
+      command:
+        - "/bin/sh"
+        - "-c"
+        - "touch /tmp/healthy; sleep 30; rm -rf /tmp/healthy; sleep 600"
+      ports: [80]
+      resources:
+        requests:
+          cpu: 1.0
+          memoryInGB: 1.5
+      livenessProbe:
+        exec:
+            command:
+                - "cat"
+                - "/tmp/healthy"
+        periodSeconds: 5
+  osType: Linux
+  restartPolicy: Always
+tags: null
+type: Microsoft.ContainerInstance/containerGroups
+
 jobs:
     build-and-deploy:
         runs-on: ubuntu-latest
