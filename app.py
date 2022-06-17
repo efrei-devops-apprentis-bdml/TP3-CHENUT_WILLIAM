@@ -13,9 +13,7 @@ app = Flask(__name__)
 api = Api(app)
 schema = WeatherQuerySchema()
 
-
 api_key = os.environ['API_KEY']
-
 
 class Weather(Resource):
     def get(self):
