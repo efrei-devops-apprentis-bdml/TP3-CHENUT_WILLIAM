@@ -9,7 +9,7 @@ COPY app.py ./
 COPY requirements.txt .
 
 # install dependencies
-RUN pip install -r requirements.txt
+RUN pip install -r --no-cache-dir requirements.txt
 
 # command to run on container start
 #CMD ["flask", "run", "--host", "0.0.0.0:8081"]
