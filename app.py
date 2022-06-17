@@ -1,33 +1,32 @@
-from requests import Request, Session, Response
 import os
-from flask import Flask
+import requests
+import json
+from flask import Flask, request
+from flask_restful import Resource, Api, reqparse
+from marshmallow import Schema, fields
+
+class WeatherQuerySchema(Schema):
+    key1 = fields.Str(required=True)
+    key2 = fields.Str(required=True)
 
 app = Flask(__name__)
-
-@app.route('/<lat>/<lon>')
-def get_weather(lat, lon):
-    try:
-        key = os.environ['API_KEY']
-        url = 'http://api.openweathermap.org/data/2.5/weather'
-        params = {
-            'lat': lat,
-            'lon': lon,
-            'appid': key
-        }
-        s = Session()
-        req = Request('GET', url, params=params)
-        prepped = req.prepare()
-        resp = s.send(prepped)
-        return resp.json()
-    except Exception as e:
-        return e
-
-if __name__ == "__main__":
-       app.run(host='0.0.0.0',debug=True,port=8081)
+api = Api(app)
+schema = WeatherQuerySchema()
 
 
+api_key = os.environ['API_KEY']
 
-# lat = os.environ['LAT']
-# lon = os.environ['LONG']
 
-# print(get_weather(lat,lon,key))
+class Weather(Resource):
+    def get(self):
+        errors = schema.validate(request.args)
+        print(request.args)
+        url = "https://api.openweathermap.org/data/2.5/weather?lat=%s&lon=%s&appid=%s" % (request.args['lat'], request.args['lon'], api_key)
+        response = requests.get(url)
+        data = json.loads(response.text)
+        return data
+
+api.add_resource(Weather, '/')
+
+if __name__ == '__main__':
+    app.run(host="0.0.0.0",debug=True,port=8081)
