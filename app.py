@@ -27,4 +27,4 @@ class Weather(Resource):
 api.add_resource(Weather, '/')
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0",debug=True,port=8081)
+    app.run(host="0.0.0.0",debug=True,port=80)
